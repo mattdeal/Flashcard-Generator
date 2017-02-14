@@ -1,33 +1,33 @@
 function BasicFlashcard(front, back) {
     this.front = front;
-    this.back = back;
+    this.back = back;    
+}
 
-    this.showFront = function() {
-        console.log(this.front);
-    }
+BasicFlashcard.prototype.showFront = function() {
+    console.log(this.front);
+}
 
-    this.showBack = function() {
-        console.log(this.back);
-    }
+BasicFlashcard.prototype.showBack = function() {
+    console.log(this.back);
 }
 
 function ClozeFlashcard(text, cloze) {
     this.text = text;
     this.cloze = cloze;
-    this.displayCloze = false;
+    this.displayCloze = false;    
+}
 
-    this.showText = function() {
-        if (this.displayCloze) {
-            console.log(this.text.replace('_', this.cloze));
-        } else {
-            console.log(this.text);
-        }
+ClozeFlashcard.prototype.showText = function() {
+    if (this.displayCloze) {
+        console.log(this.text.replace('_', this.cloze));
+    } else {
+        console.log(this.text);
     }
+}
 
-    this.showAnswer = function() {
-        this.displayCloze = true;
-        this.showText();
-    }
+ClozeFlashcard.prototype.showAnswer = function() {
+    this.displayCloze = true;
+    this.showText();
 }
 
 function saveCards() {
