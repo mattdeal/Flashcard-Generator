@@ -44,15 +44,10 @@ var allCards = [];
 
 //todo: determine way to gather card data
 function mainMenu() {
-    //todo: show how many cards the user has created/loaded
-    //new cards, total cards
+    console.log('You have ' + newCards.length ' new Flashcards');
+    console.log('There are ' + allCards.length ' Flashcards available');
+    console.log('---------------------------------');
 
-    //todo: use inquirer to prompt the user for what they want to do
-    //todo: create a card - calls createCard();
-    //todo: save cards - appends all current cards to cards.txt as json object
-    //todo: load cards - loads all cards from cards.txt
-    //todo: view cards - shows a list of all cards and lets the user pick one to view
-    //todo: exit app - exit the application
     inquirer.prompt([
         {
             type: "list",
@@ -86,12 +81,12 @@ function mainMenu() {
 // todo: return to main menu when finished
 function createFlashCard() {
     inquirer.prompt([
-    {
-        type: "list",
-        message: "What type of Flashcard would you like to make?",
-        choices: ["Basic", "Cloze"],
-        name: "cardType"
-    }
+        {
+            type: "list",
+            message: "What type of Flashcard would you like to make?",
+            choices: ["Basic", "Cloze"],
+            name: "cardType"
+        }
     ]).then(function(answer) {
         if (answer.cardType === 'Basic') {
             createBasicFlashCard();
@@ -128,28 +123,34 @@ function saveFlashCards() {
         } else {
             newCards = [];
             console.log('Cards Saved!');
-        }
-
-        // return to main menu
-        mainMenu();
+        }        
     });
+
+    // return to main menu
+    mainMenu();
 }
 
 //todo: load all cards from cards.txt
 // todo: return to main menu when finished
 function loadFlashCards() {
 
+    // return to main menu
+    mainMenu();
 }
 
 //todo: show user a list of cards, when one is selected, call viewCard
 function viewFlashCards() {
 
+    // return to main menu
+    mainMenu();
 }
 
 //todo: show the card front, prompt for input, then show answer
 //todo: return to main menu when finished
 function viewFlashCard() {
 
+    // return to main menu
+    mainMenu();
 }
 
 //todo: exit the app
