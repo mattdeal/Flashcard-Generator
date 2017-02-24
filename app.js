@@ -131,11 +131,11 @@ function saveFlashCards() {
         } else {
             newCards = [];
             console.log('Cards Saved!');
-        }        
-    });
+        }  
 
-    // return to main menu
-    mainMenu();
+         // return to main menu
+        mainMenu();      
+    });
 }
 
 // load all cards from cards.txt
@@ -147,7 +147,7 @@ function loadFlashCards() {
         var dataArr = data.split('\r\n');
 
         for (var i in dataArr) {
-            console.log('*' + dataArr[i] + '*');
+            // console.log('*' + dataArr[i] + '*');
             if (dataArr[i] !== '') {
                 var card = JSON.parse(dataArr[i]);
                 if (card.front) {
@@ -158,7 +158,7 @@ function loadFlashCards() {
             }
         }
 
-        console.log(allCards);
+        // console.log(allCards);
 
         mainMenu();
     });
@@ -166,19 +166,73 @@ function loadFlashCards() {
 
 //todo: show user a list of cards, when one is selected, call viewCard
 function viewFlashCards() {
+    var questions = [];
+    for (var i in allCards) {
+        if (allCards[i].front) {
+            questions.push(allCards[i].front);
+        } else {
+            questions.push(allCards[i].text);
+        }
+    }
 
-    console.log(allCards);
-
-    // return to main menu
-    mainMenu();
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Select a card",
+            choices: questions,
+            name: "cardText"
+        }
+    ]).then(function(answers) {
+        for (var i in allCards) {
+            if (answers.cardText && allCards[i].front && answers.cardText === allCards[i].front) {
+                viewFlashCard(allCards[i]);
+            } else if (answers.cardText && allCards[i].text && answers.cardText === allCards[i].text) {
+                viewFlashCard(allCards[i]);
+            }
+        }
+    });
 }
 
 //todo: show the card front, prompt for input, then show answer
 //todo: return to main menu when finished
-function viewFlashCard() {
+function viewFlashCard(card) {
+    var text, answer;
 
-    // return to main menu
-    mainMenu();
+    if (card.front) {
+        text = card.front;
+        answer = card.back;
+    } else {
+        text = card.text;
+        answer = card.cloze;
+    }
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            message: text,
+            name: 'userAnswer',
+            validate: function(str) {
+                return (str !== null && str.length > 0);
+            }
+        }
+    ]).then(function(answers) {
+        if (answers.userAnswer === answer) {
+            console.log('CORRECT!');
+        } else {
+            console.log('WRONG!');
+        }
+
+        if (card.front) {
+            console.log(card.front + ' - ' + card.back);
+        } else {
+            card.showAnswer();
+        }
+
+        console.log('---------------------------------');
+        
+        // return to main mainMenu
+        mainMenu();
+    });
 }
 
 // start app on main menu

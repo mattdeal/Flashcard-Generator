@@ -1,3 +1,4 @@
 {"front":"This is the front","back":"This is the back"}
 {"text":"stuff _","cloze":"things","displayCloze":false}
 {"front":"weeee","back":"wooo"}
+{"front":"front","back":"back"}
