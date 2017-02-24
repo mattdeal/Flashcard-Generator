@@ -1,38 +1,5 @@
-//todo: move to BasicFlashcard.js
-function BasicFlashcard(front, back) {
-    this.front = front;
-    this.back = back;    
-}
-
-BasicFlashcard.prototype.showFront = function() {
-    console.log(this.front);
-}
-
-BasicFlashcard.prototype.showBack = function() {
-    console.log(this.back);
-}
-
-//todo: move to ClozeFlashcard.js
-function ClozeFlashcard(text, cloze) {
-    this.text = text;
-    this.cloze = cloze;
-    this.displayCloze = false;    
-}
-
-ClozeFlashcard.prototype.showText = function() {
-    if (this.displayCloze) {
-        console.log(this.text.replace('_', this.cloze));
-    } else {
-        console.log(this.text);
-    }
-}
-
-ClozeFlashcard.prototype.showAnswer = function() {
-    this.displayCloze = true;
-    this.showText();
-}
-
-//todo: require flashcard classes
+var BasicFlashcard = require('./BasicFlashcard.js');
+var ClozeFlashcard = require('./ClozeFlashcard.js');
 var fs = require('fs');
 var inquirer = require('inquirer');
 
@@ -42,10 +9,10 @@ var newCards = [];
 // all cards in this session and any cards loaded from file
 var allCards = [];
 
-//todo: determine way to gather card data
+// main menu - chose an action
 function mainMenu() {
-    console.log('You have ' + newCards.length ' new Flashcards');
-    console.log('There are ' + allCards.length ' Flashcards available');
+    console.log('You have ' + newCards.length + ' new Flashcards');
+    console.log('There are ' + allCards.length + ' Flashcards available');
     console.log('---------------------------------');
 
     inquirer.prompt([
@@ -58,7 +25,7 @@ function mainMenu() {
     ]).then(function (answer) {
         switch (answer.action) {
             case "Create a Flashcard":
-                createFlascard();
+                createFlashCard();
                 break;
             case "Save Flashcards":
                 saveFlashCards();
@@ -70,15 +37,14 @@ function mainMenu() {
                 viewFlashCards();
                 break;
             default:
-                //todo: exit
+                // exit app
                 break;
         }
 
     });
 }
 
-// todo: prompt for which type of card to create, call appropriate function
-// todo: return to main menu when finished
+// prompt for which type of card to create, call appropriate function
 function createFlashCard() {
     inquirer.prompt([
         {
@@ -97,17 +63,59 @@ function createFlashCard() {
 }
 
 // create a BasicFlashCard
-// todo: return to main menu when finished
 function createBasicFlashCard() {
-    // todo: validate that there are entries for front and back
-    // todo: add card to newCards and allCards
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Enter front text",
+            name: "front",
+            validate: function(str) {
+                return (str !== null && str.length > 0);
+            }
+        },
+        {
+            type: "input",
+            message: "Enter back text",
+            name: "back",
+            validate: function(str) {
+                return (str !== null && str.length > 0);
+            }
+        }
+    ]).then(function(answers) {
+        var basicCard = new BasicFlashcard(answers.front, answers.back);
+        newCards.push(basicCard);
+        allCards.push(basicCard); 
+
+        mainMenu();       
+    });
 }
 
 // create a ClozeFlashCard
-// todo: return to main menu when finished
 function createClozeFlashCard() {
-    // todo: validate that there are entries for text and cloze AND that text includes '_'
-    // todo: add card to newCards and allCards
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Enter text.  Use _ to indicate the blank that needs to be filled.",
+            name: "text",
+            validate: function(str) {
+                return (str !== null && str.length > 0 && str.indexOf('_') > -1);
+            }
+        },
+        {
+            type: "input",
+            message: "Enter cloze text",
+            name: "cloze",
+            validate: function(str) {
+                return (str !== null && str.length > 0);
+            }
+        }
+    ]).then(function(answers) {
+        var clozeCard = new ClozeFlashcard(answers.text, answers.cloze);
+        newCards.push(clozeCard);
+        allCards.push(clozeCard); 
+
+        mainMenu();       
+    });
 }
 
 // save all newCards to file, clear newCards so we don't save a card twice
@@ -130,16 +138,36 @@ function saveFlashCards() {
     mainMenu();
 }
 
-//todo: load all cards from cards.txt
-// todo: return to main menu when finished
+// load all cards from cards.txt
 function loadFlashCards() {
+    fs.readFile('cards.txt', 'utf8', function (err, data) {
+        if (err) throw err;
 
-    // return to main menu
-    mainMenu();
+        allCards = [];
+        var dataArr = data.split('\r\n');
+
+        for (var i in dataArr) {
+            console.log('*' + dataArr[i] + '*');
+            if (dataArr[i] !== '') {
+                var card = JSON.parse(dataArr[i]);
+                if (card.front) {
+                    allCards.push(new BasicFlashcard(card.front, card.back));
+                } else {
+                    allCards.push(new ClozeFlashcard(card.text, card.cloze));
+                }
+            }
+        }
+
+        console.log(allCards);
+
+        mainMenu();
+    });
 }
 
 //todo: show user a list of cards, when one is selected, call viewCard
 function viewFlashCards() {
+
+    console.log(allCards);
 
     // return to main menu
     mainMenu();
@@ -153,7 +181,5 @@ function viewFlashCard() {
     mainMenu();
 }
 
-//todo: exit the app
-function exit() {
-
-}
+// start app on main menu
+mainMenu();
